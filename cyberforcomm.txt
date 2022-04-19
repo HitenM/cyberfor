@@ -1,0 +1,97 @@
+dd --help || make a rock and tight copy of the file
+
+sudo fdisk -l || list out all the devices mounted on the system
+
+sudo fdisk -x || extra info
+
+sfdisk -h || manipulate disk partitions
+
+sudo sfdisk -d /dev/sda > sda_part_Table  (wrtie to > )
+
+----
+dcfld
+----
+dc3dd || no metadata and stuff || facility to log, see progress of image, hashing etc.
+
+sudo apt-get install dc3dd
+
+dc3dd if=/dev/sdb of=pendimg1.img OR hof=sss.img (for calculation of hash at the end) hofs=sss_split.000 (input file = if) hash=md5 log=pendimag_log hlog=pendimg2_hlog ofsz=25M ofs(name)=pendimg2_split.000
+
+md5sum /dev/sdb || create md5 hash || compare with image file hash to verify
+
+sha1sum
+
+cat pendimg2_split.0* | dc3dd of=pendimg2_combined			(basically combine the split files)
+
+
+dc3dd --help
+
+dc3dd wipe=/dev/sdb pat=1010 OR tpat=coe30(text pattern) (for sterilizing the drive for forensic use)(pat 1010 filling)
+
+--------------------
+dd if=/dev/sdb of=imgfile2.dd bs=512(block size, multiple of 2 upto 65136) conv=noerror,sync(continue despite there being an error, error sector pe null inserted) | md5sum > hashusingdd.md5
+
+
+rm split_*
+
+-------------
+
+sudo dd if=/proc/kcore (virtual memory info) | hexdump - C | less
+
+sudo dd if=/proc/filesystems (supported filesystems)  | hexdump - C | less ( can be editable to add new ext )
+
+sudo dd if=/proc/interrupts (interrupts of system) | hexdump - C | less
+
+sudo dd if=/proc/uptime (uptime idle time)
+
+sudo dd if=/proc/partitions
+
+sudo dd if=/proc/meminfo
+
+sudo dd if=/proc/kallsyms (loaded modules)
+
+-----------------------
+
+sudo dd if=/dev/sdc of=backup.img conv=noerror,sync
+
+-----------------
+
+ddrescue for faulty drives, sudo apt-get install gddrescue ( to get good sectors first and manage bad ones efficiently )
+
+sudo dmesg ( store all info of the system regarding events like a log) 
+
+sudo ddrescue -d -r3 /dev/sdb mydrive.raw mydrive.log (read 100 times or retries to read sectors faulty ones)	( use --help ) 
+
+df -h ( status of filesystems )
+
+du -h (status of current dir)
+
+-----------
+
+foremost (allows to extract data of different type, carves out signature etc.)
+
+sudo foremost -i mydrive.raw -o foremost_folder ( extracts the item with their .ext in the folders )
+
+foremost -v ( v for verbose) -t png, zip, jpg -i image1.dd -o foremost_folder4 (need empty folder always)
+
+file 3.sys ( file command to reveal the actual filesystem of the file )
+
+---------------
+
+intall recoverjpeg ( recovers jpeg files from image ) ( signature based or ext based )
+
+recoverjpeg image1.dd -o recoverjpeg_folder ( create the folder beforehand ) 
+
+---------------
+
+install scalpel ( based on scalpel ) ( can edit scalpel.conf for ext add/del )
+
+sudo nano scalpel ( to increase size of image ext to read more )
+
+scalpel -c scalpel.conf -o out1 image1.dd ( /etc/scalpel for the conf file ) ( can omit scalpel.conf )
+
+-----------------
+
+install bulkextractor ( carves out diff types of data, kind of same as foremost, captures more data tho )
+
+sudo bulk_extractor -o out2 image1.dd
